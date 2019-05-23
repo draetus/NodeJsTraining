@@ -3,21 +3,6 @@ import { UserValidator } from "./UserValidator";
 
 export class UserBusiness {
 
-	public static createUser(data: any): User {
-		UserValidator.validateCreateUser(data);
-
-		var user: User = new User();
-
-		user.id = data.id;
-		user.name = data.name;
-		user.age = data.age;
-		user.phone = data.phone;
-		user.sex = data.sex;
-		user.isHuman = data.isHuman;
-
-		return user;
-	}
-
 	public static createFields(data: any): any {
 		UserValidator.validateFields(data);
 

@@ -1,21 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var User_1 = require("../../entity/User");
 var UserValidator_1 = require("./UserValidator");
 var UserBusiness = /** @class */ (function () {
     function UserBusiness() {
     }
-    UserBusiness.createUser = function (data) {
-        UserValidator_1.UserValidator.validateCreateUser(data);
-        var user = new User_1.User();
-        user.id = data.id;
-        user.name = data.name;
-        user.age = data.age;
-        user.phone = data.phone;
-        user.sex = data.sex;
-        user.isHuman = data.isHuman;
-        return user;
-    };
     UserBusiness.createFields = function (data) {
         UserValidator_1.UserValidator.validateFields(data);
         var find_fields = {};

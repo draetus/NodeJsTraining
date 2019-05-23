@@ -12,7 +12,7 @@ export class UserValidator {
 		if (data.sex){return;}
 		if (data.isHuman){return;}
 
-		throw new CustomError(404, Messages.ERROR_NO_FIELD, new Error);
+		throw new CustomError(400, Messages.ERROR_NO_FIELD, new Error);
 	}
 	
 }

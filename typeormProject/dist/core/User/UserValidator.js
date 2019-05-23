@@ -24,28 +24,7 @@ var UserValidator = /** @class */ (function () {
         if (data.isHuman) {
             return;
         }
-        throw new CustomError_1.CustomError(404, Messages_1.Messages.ERROR_NO_FIELD, new Error);
-    };
-    UserValidator.validateCreateUser = function (data) {
-        if (data.id) {
-            return;
-        }
-        if (data.name) {
-            return;
-        }
-        if (data.age) {
-            return;
-        }
-        if (data.phone) {
-            return;
-        }
-        if (data.sex) {
-            return;
-        }
-        if (data.isHuman) {
-            return;
-        }
-        throw new CustomError_1.CustomError(405, Messages_1.Messages.ERROR_NO_USER_DATA, new Error);
+        throw new CustomError_1.CustomError(400, Messages_1.Messages.ERROR_NO_FIELD, new Error);
     };
     return UserValidator;
 }());
