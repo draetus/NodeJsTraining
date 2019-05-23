@@ -6,7 +6,7 @@ var Messages = /** @class */ (function () {
     Messages.USER_SAVED = "User Saved!";
     Messages.USER_DELETED = "User Deleted!";
     Messages.USER_UPDATED = "User Updated!";
-    Messages.ERROR_NO_FIND_FIELD = "No search field";
+    Messages.ERROR_NO_FIELD = "No field filled";
     Messages.ERROR_NO_USER_DATA = "No user data";
     return Messages;
 }());

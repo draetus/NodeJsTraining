@@ -47,7 +47,7 @@ var UserController = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 new Promise(function (result, reject) { return __awaiter(_this, void 0, void 0, function () {
-                    var connection, repository, user, err_1;
+                    var connection, repository, create_fields, err_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -58,8 +58,8 @@ var UserController = /** @class */ (function () {
                                 return [4 /*yield*/, connection.manager.getRepository(User_1.User)];
                             case 2:
                                 repository = _a.sent();
-                                user = UserBusiness_1.UserBusiness.createUser(req.body);
-                                return [4 /*yield*/, repository.save(user)];
+                                create_fields = UserBusiness_1.UserBusiness.createFields(req.body);
+                                return [4 /*yield*/, repository.save(create_fields)];
                             case 3:
                                 _a.sent();
                                 result(Messages_1.Messages.USER_SAVED);
@@ -78,10 +78,11 @@ var UserController = /** @class */ (function () {
                     res.status(200).send({ message: message });
                 }).catch(function (err) {
                     console.error(err);
-                    res.status(400).send({
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
+                    var error = err.getResponse();
+                    res.status(err.status).send({
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
                     });
                 });
                 return [2 /*return*/];
@@ -105,7 +106,7 @@ var UserController = /** @class */ (function () {
                             case 2:
                                 repository = _a.sent();
                                 try {
-                                    find_fields = UserBusiness_1.UserBusiness.createFindFields(req.query);
+                                    find_fields = UserBusiness_1.UserBusiness.createFields(req.query);
                                 }
                                 catch (_b) { }
                                 return [4 /*yield*/, repository.find({ where: find_fields })];
@@ -127,10 +128,11 @@ var UserController = /** @class */ (function () {
                     res.status(200).send({ data: users });
                 }).catch(function (err) {
                     console.error(err);
-                    res.status(400).send({
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
+                    var error = err.getResponse();
+                    res.status(err.status).send({
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
                     });
                 });
                 return [2 /*return*/];
@@ -142,7 +144,7 @@ var UserController = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 new Promise(function (result, reject) { return __awaiter(_this, void 0, void 0, function () {
-                    var connection, repository, find_fields, user, err_3;
+                    var connection, repository, find_fields, update_fields, err_3;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -153,9 +155,9 @@ var UserController = /** @class */ (function () {
                                 return [4 /*yield*/, connection.manager.getRepository(User_1.User)];
                             case 2:
                                 repository = _a.sent();
-                                find_fields = UserBusiness_1.UserBusiness.createFindFields(req.query);
-                                user = UserBusiness_1.UserBusiness.createUser(req.body);
-                                return [4 /*yield*/, repository.update(find_fields, user)];
+                                find_fields = UserBusiness_1.UserBusiness.createFields(req.query);
+                                update_fields = UserBusiness_1.UserBusiness.createFields(req.body);
+                                return [4 /*yield*/, repository.update(find_fields, update_fields)];
                             case 3:
                                 _a.sent();
                                 result(Messages_1.Messages.USER_UPDATED);
@@ -174,10 +176,11 @@ var UserController = /** @class */ (function () {
                     res.status(200).send({ message: message });
                 }).catch(function (err) {
                     console.error(err);
-                    res.status(400).send({
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
+                    var error = err.getResponse();
+                    res.status(err.status).send({
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
                     });
                 });
                 return [2 /*return*/];
@@ -200,8 +203,7 @@ var UserController = /** @class */ (function () {
                                 return [4 /*yield*/, connection.manager.getRepository(User_1.User)];
                             case 2:
                                 repository = _a.sent();
-                                find_fields = UserBusiness_1.UserBusiness.createFindFields(req.query);
-                                console.log(find_fields);
+                                find_fields = UserBusiness_1.UserBusiness.createFields(req.query);
                                 return [4 /*yield*/, repository.delete(find_fields)];
                             case 3:
                                 _a.sent();
@@ -221,10 +223,11 @@ var UserController = /** @class */ (function () {
                     res.status(200).send({ message: message });
                 }).catch(function (err) {
                     console.error(err);
-                    res.status(400).send({
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
+                    var error = err.getResponse();
+                    res.status(err.status).send({
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
                     });
                 });
                 return [2 /*return*/];

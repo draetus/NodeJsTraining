@@ -5,6 +5,8 @@ import { Connection } from "typeorm";
 
 import { Messages } from  "../../Messages";
 
+import { CustomError } from "../../system/CustomError"
+
 import { User } from "../../entity/User";
 import { UserBusiness } from "./UserBusiness";
 import { UserValidator } from "./UserValidator";
@@ -31,12 +33,13 @@ export class UserController {
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
-		}).catch((err: Error): void => {
+		}).catch((err: CustomError): void => {
 			console.error(err);
-			res.status(400).send({
-				name: err.name,
-			    message: err.message,
-			    stack: err.stack
+			var error: any = err.getResponse();
+			res.status(err.status).send({
+				name: error.name,
+			    message: error.message,
+			    stack: error.stack
 			});
 		});
 	}
@@ -64,12 +67,13 @@ export class UserController {
 			}
 		}).then((users: Array<User>): void => {
 			res.status(200).send({data: users});
-		}).catch((err: Error): void => {
+		}).catch((err: CustomError): void => {
 			console.error(err);
-			res.status(400).send({
-				name: err.name,
-			    message: err.message,
-			    stack: err.stack
+			var error: any = err.getResponse();
+			res.status(err.status).send({
+				name: error.name,
+			    message: error.message,
+			    stack: error.stack
 			});
 		});
 	}
@@ -95,12 +99,13 @@ export class UserController {
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
-		}).catch((err: Error): void => {
+		}).catch((err: CustomError): void => {
 			console.error(err);
-			res.status(400).send({
-				name: err.name,
-			    message: err.message,
-			    stack: err.stack
+			var error: any = err.getResponse();
+			res.status(err.status).send({
+				name: error.name,
+			    message: error.message,
+			    stack: error.stack
 			});
 		});
 	}
@@ -125,12 +130,13 @@ export class UserController {
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
-		}).catch((err: Error): void => {
+		}).catch((err: CustomError): void => {
 			console.error(err);
-			res.status(400).send({
-				name: err.name,
-			    message: err.message,
-			    stack: err.stack
+			var error: any = err.getResponse();
+			res.status(err.status).send({
+				name: error.name,
+			    message: error.message,
+			    stack: error.stack
 			});
 		});
 	}

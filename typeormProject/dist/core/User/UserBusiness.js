@@ -16,8 +16,8 @@ var UserBusiness = /** @class */ (function () {
         user.isHuman = data.isHuman;
         return user;
     };
-    UserBusiness.createFindFields = function (data) {
-        UserValidator_1.UserValidator.validateFindField(data);
+    UserBusiness.createFields = function (data) {
+        UserValidator_1.UserValidator.validateFields(data);
         var find_fields = {};
         if (data.id) {
             find_fields.id = data.id;
