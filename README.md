@@ -1,3 +1,3 @@
 # NodeJsTraining
 
-The objective is to maintain some scrits, so it could be usefull later.
+The objective is to maintain some scripts, so it could be usefull later.
