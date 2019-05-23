@@ -1,7 +1,8 @@
-# Awesome Project Build with TypeORM
+# Project with TypeORM
 
-Steps to run this project:
+## Node Typescript
 
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+### TypeORM link: https://typeorm.io/#/
+### TypeORM github: https://github.com/typeorm/typeorm
+
+Server is set with express
