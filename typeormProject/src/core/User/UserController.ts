@@ -27,11 +27,7 @@ export class UserController {
 				var connection: Connection = await ConnectionUtil.getConnection();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				var find_fields: object = {
-					login: req.body.login,
-				};
-
-				await UserValidator.validateSaveUser(req, find_fields, repository);
+				await UserValidator.validateSaveUser(req, repository);
 
 				req.body.password = CommonUtil.encrypt(req.body.password);
 
@@ -85,7 +81,7 @@ export class UserController {
 				var connection: Connection = await ConnectionUtil.getConnection();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				await Validator.validateIfNotExistsInDatabase(req.params, repository);
+				await Validator.validateIfExistsInDatabase(req.params, repository);
 
 				var user: User = await repository.findOne({where: req.params});
 
@@ -112,7 +108,7 @@ export class UserController {
 				var connection: Connection = await ConnectionUtil.getConnection();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				await UserValidator.validateUpdateUser(req, req.params, repository);
+				await UserValidator.validateUpdateUser(req, repository);
 
 				await repository.update(req.params, req.body);
 
@@ -162,12 +158,7 @@ export class UserController {
 				var connection: Connection = await ConnectionUtil.getConnection();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				var find_fields: object = {
-					login: req.body.login,
-					password: req.body.password
-				}
-
-				await UserValidator.validateLogin(req, find_fields, repository);
+				await UserValidator.validateLogin(req, repository);
 
 				req.body.password = CommonUtil.encrypt(req.body.password);
 
