@@ -6,19 +6,22 @@ export class User {
 	@PrimaryGeneratedColumn({type: "int"})
 	id: number;
 
-	@Column({type: "varchar", length: 45})
+	@Column({type: "varchar", length: 200})
+	login: string;
+
+	@Column({type: "varchar", length: 500})
+	password: string;
+
+	@Column({type: "varchar", length: 100})
 	name: string;
 
-	@Column({type: "int"})
+	@Column({type: "int", default: null})
 	age: number;
 
-	@Column({type: "varchar", length: 45})
-	sex: string;
-
-	@Column({type: "varchar", length: 45})
-	phone: string;
-
-	@Column({type: "tinyint"})
+	@Column({type: "tinyint", default: false})
 	isHuman: boolean;
+
+	@Column({type: "float", default: 0})
+	balance: number;
 
 }

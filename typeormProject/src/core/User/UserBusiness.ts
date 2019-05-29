@@ -1,21 +1,19 @@
 import { User } from "../../entity/User";
-import { UserValidator } from "./UserValidator";
 
 export class UserBusiness {
 
-	public static createFields(data: any): any {
-		UserValidator.validateFields(data);
+	public static convertToObject(data: any): object
+	{
+		var user: any = {};
+		if (data.id){user.id = data.id;}
+		if (data.login){user.login = data.login;}
+		if (data.password){user.password = data.password;}
+		if (data.name){user.name = data.name;}
+		if (data.age){user.age = data.age;}
+		if (data.isHuman){user.isHuman = data.isHuman;}
+		if (data.balance){user.balance = data.balance;}
 
-		var find_fields: any = {};
-
-		if (data.id){find_fields.id = data.id;}
-		if (data.name){find_fields.name = data.name;}
-		if (data.age){find_fields.age = data.age;}
-		if (data.phone){find_fields.phone = data.phone;}
-		if (data.sex){find_fields.sex = data.sex;}
-		if (data.isHuman){find_fields.isHuman = data.isHuman;}
-
-		return find_fields;
+		return user;
 	}
 
 }

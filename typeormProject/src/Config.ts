@@ -54,7 +54,5 @@ export class Config {
 		}
 	};
 
-	public static ENCRYPT_SECRET = "dha%j24sdj$k53*3h2#dsj$jsdf";
-
 
 }

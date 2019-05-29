@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
-
-import { ConnectionUtil } from "../../util/ConnectionUtil";
 import { Connection } from "typeorm";
+import { Repository } from "typeorm";
+
+import { CommonUtil } from "../../util/CommonUtil";
+import { ConnectionUtil } from "../../util/ConnectionUtil";
+import { Validator } from "../../util/Validator";
+import { TokenUtil } from "../../util/TokenUtil";
+import { ResponseUtil } from "../../util/ResponseUtil";
 
 import { Messages } from  "../../Messages";
 
-import { CustomError } from "../../system/CustomError"
+import { CustomError } from "../../system/CustomError";
 
 import { User } from "../../entity/User";
 import { UserBusiness } from "./UserBusiness";
@@ -13,17 +18,24 @@ import { UserValidator } from "./UserValidator";
 
 export class UserController {
 
-	public static async saveUser(req: Request, res: Response){
+	public static async saveUser(req: Request, res: Response): Promise<void> {
 
 		new Promise<string>(async (result, reject) => {
 			try {
+				req.body = UserBusiness.convertToObject(req.body);
 
 				var connection: Connection = await ConnectionUtil.getConnection();
-				var repository = await connection.manager.getRepository(User);
+				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				var create_fields: any = UserBusiness.createFields(req.body);
+				var find_fields: object = {
+					login: req.body.login,
+				};
 
-				await repository.save(create_fields);
+				await UserValidator.validateSaveUser(req, find_fields, repository);
+
+				req.body.password = CommonUtil.encrypt(req.body.password);
+
+				await repository.save(req.body);
 
 				result(Messages.USER_SAVED);
 			} catch (err) {
@@ -34,13 +46,7 @@ export class UserController {
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
 		}).catch((err: CustomError): void => {
-			console.error(err);
-			var error: any = err.getResponse();
-			res.status(err.status).send({
-				name: error.name,
-			    message: error.message,
-			    stack: error.stack
-			});
+			ResponseUtil.responseError(err, res);
 		});
 	}
 
@@ -49,15 +55,12 @@ export class UserController {
 
 		new Promise<Array<User>>(async (result, reject) => {
 			try {
+				req.query = UserBusiness.convertToObject(req.query);
 
 				var connection: Connection = await ConnectionUtil.getConnection();
-				var repository = await connection.manager.getRepository(User);
+				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				try {
-					var find_fields: any = UserBusiness.createFields(req.query);
-				} catch {}
-
-				var users: Array<User> = await repository.find({where: find_fields});
+				var users: Array<User> = await repository.find({where: req.query});
 
 				result(users);
 			} catch (err) {
@@ -68,13 +71,34 @@ export class UserController {
 		}).then((users: Array<User>): void => {
 			res.status(200).send({data: users});
 		}).catch((err: CustomError): void => {
-			console.error(err);
-			var error: any = err.getResponse();
-			res.status(err.status).send({
-				name: error.name,
-			    message: error.message,
-			    stack: error.stack
-			});
+			ResponseUtil.responseError(err, res);
+		});
+	}
+
+
+	public static async getOneUser(req: Request, res: Response){
+
+		new Promise<User>(async (result, reject) => {
+			try {
+				req.params = UserBusiness.convertToObject(req.params);
+
+				var connection: Connection = await ConnectionUtil.getConnection();
+				var repository: Repository<User> = await connection.manager.getRepository(User);
+
+				await Validator.validateIfNotExistsInDatabase(req.params, repository);
+
+				var user: User = await repository.findOne({where: req.params});
+
+				result(user);
+			} catch (err) {
+				reject(err);
+			} finally {
+				connection.close();
+			}
+		}).then((user: User): void => {
+			res.status(200).send({data: user});
+		}).catch((err: CustomError): void => {
+			ResponseUtil.responseError(err, res);
 		});
 	}
 
@@ -82,14 +106,15 @@ export class UserController {
 
 		new Promise<string>(async (result, reject) => {
 			try {
+				req.body = UserBusiness.convertToObject(req.body);
+				req.params = UserBusiness.convertToObject(req.params);
 
 				var connection: Connection = await ConnectionUtil.getConnection();
-				var repository = await connection.manager.getRepository(User);
+				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				var find_fields: any = UserBusiness.createFields(req.query);
-				var update_fields: any = UserBusiness.createFields(req.body);
+				await UserValidator.validateUpdateUser(req, req.params, repository);
 
-				await repository.update(find_fields, update_fields);
+				await repository.update(req.params, req.body);
 
 				result(Messages.USER_UPDATED);
 			} catch (err) {
@@ -100,13 +125,7 @@ export class UserController {
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
 		}).catch((err: CustomError): void => {
-			console.error(err);
-			var error: any = err.getResponse();
-			res.status(err.status).send({
-				name: error.name,
-			    message: error.message,
-			    stack: error.stack
-			});
+			ResponseUtil.responseError(err, res);
 		});
 	}
 
@@ -114,13 +133,12 @@ export class UserController {
 
 		new Promise<string>(async (result, reject) => {
 			try {
+				req.params = UserBusiness.convertToObject(req.params);
 
 				var connection: Connection = await ConnectionUtil.getConnection();
-				var repository = await connection.manager.getRepository(User);
+				var repository: Repository<User> = await connection.manager.getRepository(User);
 
-				var find_fields: any = UserBusiness.createFields(req.query);
-
-				await repository.delete(find_fields);
+				await repository.delete(req.params);
 
 				result(Messages.USER_DELETED);
 			} catch (err) {
@@ -131,13 +149,42 @@ export class UserController {
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
 		}).catch((err: CustomError): void => {
-			console.error(err);
-			var error: any = err.getResponse();
-			res.status(err.status).send({
-				name: error.name,
-			    message: error.message,
-			    stack: error.stack
-			});
+			ResponseUtil.responseError(err, res);
+		});
+	}
+
+	public static async login(req: Request, res: Response){
+
+		new Promise<string>(async (result, reject) => {
+			try {
+				req.body = UserBusiness.convertToObject(req.body);
+
+				var connection: Connection = await ConnectionUtil.getConnection();
+				var repository: Repository<User> = await connection.manager.getRepository(User);
+
+				var find_fields: object = {
+					login: req.body.login,
+					password: req.body.password
+				}
+
+				await UserValidator.validateLogin(req, find_fields, repository);
+
+				req.body.password = CommonUtil.encrypt(req.body.password);
+
+				var user: User = await repository.findOneOrFail({where: req.body});
+
+				var token: string = TokenUtil.create(user, new Date());
+
+				result(token);
+			} catch (err) {
+				reject(err);
+			} finally {
+				connection.close();
+			}
+		}).then((token: string): void => {
+			res.status(200).send({token: token});
+		}).catch((err: CustomError): void => {
+			ResponseUtil.responseError(err, res);
 		});
 	}
 }
