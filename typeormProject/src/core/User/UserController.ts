@@ -134,6 +134,8 @@ export class UserController {
 				var connection: Connection = await ConnectionUtil.getConnection();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
+				await Validator.validateIfExistsInDatabase(req.params, repository);
+
 				await repository.delete(req.params);
 
 				result(Messages.USER_DELETED);

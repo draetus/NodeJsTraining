@@ -11,7 +11,7 @@ export class Validator {
 	{
 		if ((await repository.count(find_fields)) < 1)
 		{
-			throw new CustomError(400, Messages.ERROR_USER_NOT_FOUND, new Error());
+			throw new CustomError(404, Messages.ERROR_NOT_FOUND, new Error());
 		}
 	}
 
@@ -19,7 +19,7 @@ export class Validator {
 	{
 		if ((await repository.count(find_fields)) > 0)
 		{
-			throw new CustomError(404, Messages.ERROR_USER_ALREADY_EXISTS, new Error());
+			throw new CustomError(400, Messages.ERROR_ALREADY_EXISTS, new Error());
 		}
 	}
 }

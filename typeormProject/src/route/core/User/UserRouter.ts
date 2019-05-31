@@ -10,9 +10,9 @@ export class UserRouter {
 		// 	login: string
 		// 	password: string 
 		// 	name: string 
-		// 	age: number 
-		// 	isHuman: boolean 
-		// 	balance: float
+		// 	age: number - Opcional
+		// 	isHuman: boolean  - Opcional
+		// 	balance: float - Opcional
 		// }
 		express.post("/api/users", (req: Request, res: Response, next: NextFunction): void => {
 			UserController.saveUser(req, res);
@@ -22,9 +22,9 @@ export class UserRouter {
 		// 	login: string
 		// 	password: string 
 		// 	name: string 
-		// 	age: number 
-		// 	isHuman: boolean 
-		// 	balance: float
+		// 	age: number - Opcional 
+		// 	isHuman: boolean - Opcional 
+		// 	balance: float - Opcional 
 		// }
 		// Params {
 		// 	id: number 
