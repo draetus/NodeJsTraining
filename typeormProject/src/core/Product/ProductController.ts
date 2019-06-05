@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Connection } from "typeorm";
+import { QueryRunner } from "typeorm";
 import { Repository } from "typeorm";
 
 import { ConnectionUtil } from "../../util/ConnectionUtil";
@@ -16,24 +16,28 @@ import { ProductBusiness } from "./ProductBusiness";
 
 export class ProductController {
 
-	public static async saveProduct(req: Request, res: Response): Promise<void> {
+	public static saveProduct(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.body = ProductBusiness.convertToObject(req.body);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<Product> = await connection.manager.getRepository(Product);
 
 				await ProductValidator.validateSaveProduct(req, repository);
 
 				await repository.save(req.body);
 				
+				connection.commitTransaction();
 				result(Messages.PRODUCT_SAVED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -42,14 +46,15 @@ export class ProductController {
 		});
 	}
 
-	public static async updateProduct(req: Request, res: Response): Promise<void> {
+	public static updateProduct(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.params = ProductBusiness.convertToObject(req.params);
 				req.body = ProductBusiness.convertToObject(req.body);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<Product> = await connection.manager.getRepository(Product);
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
@@ -58,11 +63,14 @@ export class ProductController {
 
 				await repository.update(req.params, req.body);
 				
+				connection.commitTransaction();
 				result(Messages.PRODUCT_UPDATED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -71,22 +79,26 @@ export class ProductController {
 		});
 	}
 
-	public static async getProduct(req: Request, res: Response): Promise<void> {
+	public static getProduct(req: Request, res: Response): void {
 
 		new Promise<Array<Product>>(async (result, reject) => {
 			try {
 				req.query = ProductBusiness.convertToObject(req.query);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<Product> = await connection.manager.getRepository(Product);
 
 				var products: Array<Product> = await repository.find({where: req.query});
 				
+				connection.commitTransaction();
 				result(products);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((products: Array<Product>): void => {
 			res.status(200).send({data: products});
@@ -95,24 +107,28 @@ export class ProductController {
 		});
 	}
 
-	public static async getOneProduct(req: Request, res: Response): Promise<void> {
+	public static getOneProduct(req: Request, res: Response): void {
 
 		new Promise<Product>(async (result, reject) => {
 			try {
 				req.params = ProductBusiness.convertToObject(req.params);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<Product> = await connection.manager.getRepository(Product);
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
 
 				var product: Product = await repository.findOne({where: req.params});
 				
+				connection.commitTransaction();
 				result(product);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((product: Product): void => {
 			res.status(200).send({data: product});
@@ -121,24 +137,28 @@ export class ProductController {
 		});
 	}
 
-	public static async deleteProduct(req: Request, res: Response): Promise<void> {
+	public static deleteProduct(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.params = ProductBusiness.convertToObject(req.params);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<Product> = await connection.manager.getRepository(Product);
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
 
 				await repository.delete(req.params);
 				
+				connection.commitTransaction();
 				result(Messages.PRODUCT_DELETED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});

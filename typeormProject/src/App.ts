@@ -27,6 +27,8 @@ export class App {
 
 		RouterInit.init(this.express); // Inicializa as rotas
 
+		ConnectionUtil.setup();
+
 		console.log("Servidor pronto");
 	}
 

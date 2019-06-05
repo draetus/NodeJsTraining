@@ -14,11 +14,11 @@ import { Messages } from "../Messages";
 
 export class TokenUtil {
 
-	public static create(user: User, dateNow: Date): string {
+	public static create(user: User/*, dateNow: Date*/): string {
 		const claims: object = {
 			"sub": {
 				"id": user.id,
-				"dateCreated": CommonUtil.dateToString(dateNow)
+				// "dateCreated": CommonUtil.dateToString(dateNow)
 			}
 		};
 
@@ -48,6 +48,8 @@ export class TokenUtil {
 		} else {
 			throw new CustomError(401, Messages.ERROR_USER_NOT_LOGGED, null);
 		}
+
+		return user;
 	}
 
 	private static verifyToken(token: string, secret: string): Promise<any> {

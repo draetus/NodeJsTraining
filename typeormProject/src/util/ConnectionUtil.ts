@@ -1,11 +1,11 @@
 import { Config } from "../Config";
 
-import { createConnection, Connection } from "typeorm";
+import { createConnection, Connection, getConnection, QueryRunner } from "typeorm";
 
 export class ConnectionUtil {
 
-	public static async getConnection(): Promise<Connection> {
-
+	public static async setup(): Promise<void>
+	{
 		//Escolhe database
 		var database: any = Config.DATABASES.main;
 		if (Config.TESTING && Config.DATABASES.test)
@@ -14,7 +14,8 @@ export class ConnectionUtil {
 		}
 
 		//Cria conexão com o database
-		var connection: Connection = await createConnection({
+		await createConnection({
+			name: "mysql-connection",
 		    type: "mysql",
 		    host: database.host,
 		    port: database.port,
@@ -27,7 +28,25 @@ export class ConnectionUtil {
 		    synchronize: true,
 		    logging: false
 		});
-
-		return connection;
 	}
+
+	public static async getQueryRunner(): Promise<any>
+	{
+		const queryRunner: any = ConnectionUtil.getPool().createQueryRunner();
+		await queryRunner.connect();
+		return queryRunner;
+	}
+
+	public static getPool(): Connection {
+
+		return getConnection("mysql-connection");
+	}
+
+	// public static async trand(con): Promise<Tans> {
+	// 	return new Promise((resolve, reject): Tans => {
+	// 		con.transaction((trans) => {
+	// 			resolve(trans);
+	// 		});
+	// 	});
+	// }
 }

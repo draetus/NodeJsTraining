@@ -1,5 +1,3 @@
-import { User } from "../../entity/User";
-
 export class UserBusiness {
 
 	public static convertToObject(data: any): object

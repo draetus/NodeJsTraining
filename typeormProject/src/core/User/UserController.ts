@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Connection } from "typeorm";
+import { QueryRunner } from "typeorm";
 import { Repository } from "typeorm";
 
 import { CommonUtil } from "../../util/CommonUtil";
@@ -18,13 +18,14 @@ import { UserValidator } from "./UserValidator";
 
 export class UserController {
 
-	public static async saveUser(req: Request, res: Response): Promise<void> {
+	public static saveUser(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.body = UserBusiness.convertToObject(req.body);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				await UserValidator.validateSaveUser(req, repository);
@@ -33,11 +34,14 @@ export class UserController {
 
 				await repository.save(req.body);
 
+				connection.commitTransaction();
 				result(Messages.USER_SAVED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -47,22 +51,26 @@ export class UserController {
 	}
 
 
-	public static async getUser(req: Request, res: Response){
+	public static getUser(req: Request, res: Response): void {
 
 		new Promise<Array<User>>(async (result, reject) => {
 			try {
 				req.query = UserBusiness.convertToObject(req.query);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				var users: Array<User> = await repository.find({where: req.query});
 
+				connection.commitTransaction();
 				result(users);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((users: Array<User>): void => {
 			res.status(200).send({data: users});
@@ -72,24 +80,28 @@ export class UserController {
 	}
 
 
-	public static async getOneUser(req: Request, res: Response){
+	public static getOneUser(req: Request, res: Response): void {
 
 		new Promise<User>(async (result, reject) => {
 			try {
 				req.params = UserBusiness.convertToObject(req.params);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
 
 				var user: User = await repository.findOne({where: req.params});
 
+				connection.commitTransaction();
 				result(user);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((user: User): void => {
 			res.status(200).send({data: user});
@@ -98,25 +110,29 @@ export class UserController {
 		});
 	}
 
-	public static async updateUser(req: Request, res: Response){
+	public static updateUser(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.body = UserBusiness.convertToObject(req.body);
 				req.params = UserBusiness.convertToObject(req.params);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				await UserValidator.validateUpdateUser(req, repository);
 
 				await repository.update(req.params, req.body);
 
+				connection.commitTransaction();
 				result(Messages.USER_UPDATED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -125,24 +141,28 @@ export class UserController {
 		});
 	}
 
-	public static async deleteUser(req: Request, res: Response){
+	public static deleteUser(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.params = UserBusiness.convertToObject(req.params);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
 
 				await repository.delete(req.params);
 
+				connection.commitTransaction();
 				result(Messages.USER_DELETED);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -151,28 +171,31 @@ export class UserController {
 		});
 	}
 
-	public static async login(req: Request, res: Response){
+	public static login(req: Request, res: Response): void {
 
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.body = UserBusiness.convertToObject(req.body);
+				req.body.password = CommonUtil.encrypt(req.body.password);
 
-				var connection: Connection = await ConnectionUtil.getConnection();
+				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
+				await connection.startTransaction();
 				var repository: Repository<User> = await connection.manager.getRepository(User);
 
 				await UserValidator.validateLogin(req, repository);
 
-				req.body.password = CommonUtil.encrypt(req.body.password);
-
 				var user: User = await repository.findOneOrFail({where: req.body});
 
-				var token: string = TokenUtil.create(user, new Date());
+				var token: string = TokenUtil.create(user);
 
+				connection.commitTransaction();
 				result(token);
 			} catch (err) {
+				connection.rollbackTransaction();
 				reject(err);
 			} finally {
-				connection.close();
+				if (connection)
+					connection.release();
 			}
 		}).then((token: string): void => {
 			res.status(200).send({token: token});
