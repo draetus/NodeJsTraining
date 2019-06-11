@@ -51,6 +51,8 @@ export class UserValidator {
 		if (!req.body.login){ throw new CustomError(400, Messages.ERROR_LOGIN_NOT_PROVIDED); }
 		if (!req.body.password){ throw new CustomError(400, Messages.ERROR_PASSWORD_NOT_PROVIDED); }
 
+		req.body.password = CommonUtil.encrypt(req.body.password);
+
 		var find_fields: object = {
 			login: req.body.login,
 			password: req.body.password

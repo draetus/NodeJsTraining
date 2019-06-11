@@ -30,14 +30,14 @@ export class ProductController {
 
 				await repository.save(req.body);
 				
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.PRODUCT_SAVED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -63,14 +63,14 @@ export class ProductController {
 
 				await repository.update(req.params, req.body);
 				
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.PRODUCT_UPDATED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -91,14 +91,14 @@ export class ProductController {
 
 				var products: Array<Product> = await repository.find({where: req.query});
 				
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(products);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((products: Array<Product>): void => {
 			res.status(200).send({data: products});
@@ -121,14 +121,14 @@ export class ProductController {
 
 				var product: Product = await repository.findOne({where: req.params});
 				
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(product);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((product: Product): void => {
 			res.status(200).send({data: product});
@@ -151,14 +151,14 @@ export class ProductController {
 
 				await repository.delete(req.params);
 				
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.PRODUCT_DELETED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});

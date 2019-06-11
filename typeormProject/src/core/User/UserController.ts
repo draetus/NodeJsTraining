@@ -12,6 +12,8 @@ import { Messages } from  "../../Messages";
 
 import { CustomError } from "../../system/CustomError";
 
+import { Permission } from "../../entity/Permission";
+
 import { User } from "../../entity/User";
 import { UserBusiness } from "./UserBusiness";
 import { UserValidator } from "./UserValidator";
@@ -26,22 +28,28 @@ export class UserController {
 
 				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
 				await connection.startTransaction();
-				var repository: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryUser: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryPermission: Repository<Permission> = await connection.manager.getRepository(Permission);
 
-				await UserValidator.validateSaveUser(req, repository);
+				await UserValidator.validateSaveUser(req, repositoryUser);
 
 				req.body.password = CommonUtil.encrypt(req.body.password);
 
-				await repository.save(req.body);
+				await repositoryUser.save(req.body);
 
-				connection.commitTransaction();
+				var permission: Permission = new Permission();
+				permission.idUser = (await repositoryUser.findOneOrFail(req.body)).id;
+				permission.name = "user";
+				await repositoryPermission.save(permission);
+
+				await connection.commitTransaction();
 				result(Messages.USER_SAVED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -63,14 +71,14 @@ export class UserController {
 
 				var users: Array<User> = await repository.find({where: req.query});
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(users);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((users: Array<User>): void => {
 			res.status(200).send({data: users});
@@ -92,16 +100,16 @@ export class UserController {
 
 				await Validator.validateIfExistsInDatabase(req.params, repository);
 
-				var user: User = await repository.findOne({where: req.params});
+				var user: User = await repository.findOneOrFail({where: req.params});
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(user);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((user: User): void => {
 			res.status(200).send({data: user});
@@ -125,14 +133,14 @@ export class UserController {
 
 				await repository.update(req.params, req.body);
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.USER_UPDATED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -149,20 +157,22 @@ export class UserController {
 
 				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
 				await connection.startTransaction();
-				var repository: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryUser: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryPermission: Repository<Permission> = await connection.manager.getRepository(Permission);
 
-				await Validator.validateIfExistsInDatabase(req.params, repository);
+				await Validator.validateIfExistsInDatabase(req.params, repositoryUser);
 
-				await repository.delete(req.params);
+				await repositoryPermission.delete({idUser: req.params.id});
+				await repositoryUser.delete(req.params);
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.USER_DELETED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string): void => {
 			res.status(200).send({message: message});
@@ -176,26 +186,31 @@ export class UserController {
 		new Promise<string>(async (result, reject) => {
 			try {
 				req.body = UserBusiness.convertToObject(req.body);
-				req.body.password = CommonUtil.encrypt(req.body.password);
 
 				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
 				await connection.startTransaction();
-				var repository: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryUser: Repository<User> = await connection.manager.getRepository(User);
+				var repositoryPermission: Repository<Permission> = await connection.manager.getRepository(Permission);
 
-				await UserValidator.validateLogin(req, repository);
+				await UserValidator.validateLogin(req, repositoryUser);
 
-				var user: User = await repository.findOneOrFail({where: req.body});
+				var user: User = await repositoryUser.findOneOrFail({where: req.body});
+				var permissions: Array<string> = [];
+				for (var p of (await repositoryPermission.find({where: {idUser: user.id}})))
+				{
+					permissions.push(p.name);
+				}
 
-				var token: string = TokenUtil.create(user);
+				var token: string = TokenUtil.create(user, permissions);
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(token);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((token: string): void => {
 			res.status(200).send({token: token});

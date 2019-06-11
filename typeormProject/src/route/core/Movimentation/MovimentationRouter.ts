@@ -12,13 +12,22 @@ export class MovimentationRouter
 		// 	token: string
 		// }
 		// Body {
-		//  idUser: number
 		// 	IdProduct: number
 		// 	quantity: number  - Opcional
 		// }
-		express.post("/api/movimentations", Authentication.authenticateUser , (req: Request, res: Response, next: NextFunction): void => {
-			MovimentationController.saveMovimentation(req, res);
-			// console.log(req.body);
+		express.post("/api/movimentations/buy", Authentication.authenticateUser, (req: Request, res: Response, next: NextFunction): void => {
+			MovimentationController.saveMovimentation(req, res, "buy");
+		});
+
+		// Headers {
+		// 	token: string
+		// }
+		// Body {
+		// 	IdProduct: number
+		// 	quantity: number  - Opcional
+		// }
+		express.post("/api/movimentations/stock", Authentication.authenticateModerator , (req: Request, res: Response, next: NextFunction): void => {
+			MovimentationController.saveMovimentation(req, res, "stock");
 		});
 
 	}

@@ -10,6 +10,8 @@ export class Messages {
 
 	public static MOVIMENTATION_SAVED: string = "Movimentation Saved!";
 
+	public static PERMISSION_SAVED: string = "Permission Saved!";
+
 	public static ERROR_NO_FIELD: string = "No field filled";
 	public static ERROR_NO_USER_DATA: string = "No user data";
 	public static ERROR_ALREADY_EXISTS: string = "Already exists";
@@ -25,6 +27,8 @@ export class Messages {
 	public static ERROR_QUANTITY_INVALID: string = "Quantity Invalid";
 	public static ERROR_OUT_OF_STOCK: string = "Out of Stock";
 	public static ERROR_INVALID_AUTHORIZATION_REQUEST: string = "Invalid authorization request";
+	public static ERROR_PERMISSION_DENIED: string = "Permission denied";
+	public static ERROR_NAME_INVALID: string = "Name invalid";
 
 	public static AUTHENTICATED: string = "Authenticated";
 	

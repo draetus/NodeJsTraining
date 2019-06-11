@@ -21,4 +21,7 @@ export class Movimentation {
 	@Column({type: "int", default: 1})
 	quantity: number;
 
+	@Column({type: "varchar", length: 50})
+	type: string;
+
 }

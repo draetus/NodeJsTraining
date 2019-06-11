@@ -13,9 +13,9 @@ import { Messages } from "../Messages";
 
 import { User } from "../entity/User";
 
-export class Authentication{
+export class Authentication {
 
-	public static authenticateUser(req: Request, res: Response, next: NextFunction): void	{
+	private static authenticate(req: Request, res: Response, next: NextFunction, permission: string): void	{
 		new Promise<string>(async (result, reject) => {
 			try {
 				var connection: QueryRunner = await ConnectionUtil.getQueryRunner();
@@ -25,25 +25,41 @@ export class Authentication{
 				if (!req.headers.authorization || req.headers.authorization.split(" ").length < 2)
 				{ throw new CustomError(400, Messages.ERROR_INVALID_AUTHORIZATION_REQUEST) }
 
-				var user: User = await TokenUtil.validate(repository, req.headers.authorization.split(" ")[1]);
+				var sub: any = await TokenUtil.validate(repository, req.headers.authorization.split(" ")[1]);
+				
+				var user: User = await repository.findOne({id: sub.id});
+				req.body.idLoggedUser = user.id;
 
-				req.body.idUser = user.id;
+				if (!sub.permissions || sub.permissions.indexOf(permission) == -1)
+				{ throw new CustomError(401, Messages.ERROR_PERMISSION_DENIED); }
 
-				connection.commitTransaction();
+				await connection.commitTransaction();
 				result(Messages.AUTHENTICATED);
 			} catch (err) {
-				connection.rollbackTransaction();
+				await connection.rollbackTransaction();
 				reject(err);
 			} finally {
 				if (connection)
-					connection.release();
+					await connection.release();
 			}
 		}).then((message: string) => {
-			console.log(message);
+			// console.log(message);
 			next();
 		}).catch((err: CustomError): void => {
 			ResponseUtil.responseError(err, res);
 		});
+	}
+
+	public static authenticateUser(req: Request, res: Response, next: NextFunction): void {
+		Authentication.authenticate(req, res, next, "user");
+	}
+
+	public static authenticateAdmin(req: Request, res: Response, next: NextFunction): void {
+		Authentication.authenticate(req, res, next, "admin");
+	}
+
+	public static authenticateModerator(req: Request, res: Response, next: NextFunction): void {
+		Authentication.authenticate(req, res, next, "moderator");
 	}
 
 }

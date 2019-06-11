@@ -12,7 +12,7 @@ import { Product } from "../../entity/Product";
 
 export class MovimentationValidator {
 
-	public static async validateMovimentation(req: Request, repositoryProduct: Repository<Product>): Promise<any>
+	public static async validateMovimentation(req: Request, repositoryProduct: Repository<Product>, type: string): Promise<any>
 	{
 		if (!req.body.idUser){throw new CustomError(400, Messages.ERROR_USER_NOT_PROVIDED);}
 		if (!req.body.idProduct){throw new CustomError(400, Messages.ERROR_PRODUCT_NOT_PROVIDED);}
@@ -30,7 +30,7 @@ export class MovimentationValidator {
 		}
 
 		if (req.body.quantity){
-			if (req.body.quantity < 1 || req.body.quantity > product.quantity)
+			if (req.body.quantity < 1 || type == "buy" && req.body.quantity > product.quantity)
 			{
 				throw new CustomError(400, Messages.ERROR_QUANTITY_INVALID);	
 			}

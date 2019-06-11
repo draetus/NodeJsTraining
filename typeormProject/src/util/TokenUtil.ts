@@ -14,10 +14,11 @@ import { Messages } from "../Messages";
 
 export class TokenUtil {
 
-	public static create(user: User/*, dateNow: Date*/): string {
+	public static create(user: User, permissions: Array<string>/*, dateNow: Date*/): string {
 		const claims: object = {
 			"sub": {
 				"id": user.id,
+				"permissions": permissions,
 				// "dateCreated": CommonUtil.dateToString(dateNow)
 			}
 		};
@@ -44,12 +45,12 @@ export class TokenUtil {
 
 		const user: User = await repository.findOne({where:{id: response.sub.id}});
 		if (user && user.id === response.sub.id /* && token === user.token*/) {
-			return user;
+			return response.sub;
 		} else {
 			throw new CustomError(401, Messages.ERROR_USER_NOT_LOGGED, null);
 		}
 
-		return user;
+		return response.sub;
 	}
 
 	private static verifyToken(token: string, secret: string): Promise<any> {
