@@ -1,31 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var UserValidator_1 = require("./UserValidator");
 var UserBusiness = /** @class */ (function () {
     function UserBusiness() {
     }
-    UserBusiness.createFields = function (data) {
-        UserValidator_1.UserValidator.validateFields(data);
-        var find_fields = {};
+    UserBusiness.convertToObject = function (data) {
+        var user = {};
         if (data.id) {
-            find_fields.id = data.id;
+            user.id = parseInt(data.id);
+        }
+        if (data.login) {
+            user.login = data.login;
+        }
+        if (data.password) {
+            user.password = data.password;
         }
         if (data.name) {
-            find_fields.name = data.name;
+            user.name = data.name;
         }
         if (data.age) {
-            find_fields.age = data.age;
-        }
-        if (data.phone) {
-            find_fields.phone = data.phone;
-        }
-        if (data.sex) {
-            find_fields.sex = data.sex;
+            user.age = parseInt(data.age);
         }
         if (data.isHuman) {
-            find_fields.isHuman = data.isHuman;
+            user.isHuman = parseInt(data.isHuman) == 1;
         }
-        return find_fields;
+        if (data.balance) {
+            user.balance = parseFloat(data.balance);
+        }
+        return user;
     };
     return UserBusiness;
 }());

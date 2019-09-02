@@ -35,63 +35,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = require("../Config");
-var typeorm_1 = require("typeorm");
-var ConnectionUtil = /** @class */ (function () {
-    function ConnectionUtil() {
+var CustomError_1 = require("../../system/CustomError");
+var Validator_1 = require("../../util/Validator");
+var Messages_1 = require("../../Messages");
+var ProductValidator = /** @class */ (function () {
+    function ProductValidator() {
     }
-    ConnectionUtil.setup = function () {
+    ProductValidator.validateSaveProduct = function (req, repository) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, database;
+            var find_fields;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        database = Config_1.Config.DATABASES.main;
-                        if (Config_1.Config.TESTING && Config_1.Config.DATABASES.test) {
-                            database = Config_1.Config.DATABASES.test;
+                        if (!req.body.name) {
+                            throw new CustomError_1.CustomError(400, Messages_1.Messages.ERROR_NAME_NOT_PROVIDED);
                         }
-                        //Cria conexão com o database
-                        return [4 /*yield*/, typeorm_1.createConnection({
-                                name: "mysql-connection",
-                                type: "mysql",
-                                host: database.host,
-                                port: database.port,
-                                username: database.user,
-                                password: database.password,
-                                database: database.database,
-                                entities: [
-                                    __dirname.slice(0, __dirname.length - 5) + "/entity/*.js" // Entidades devem seguir o padrão do banco
-                                ],
-                                synchronize: true,
-                                logging: false
-                            })];
+                        if (!req.body.price) {
+                            throw new CustomError_1.CustomError(400, Messages_1.Messages.ERROR_PRICE_NOT_PROVIDED);
+                        }
+                        find_fields = {
+                            name: req.body.name
+                        };
+                        return [4 /*yield*/, Validator_1.Validator.validateIfNotExistsInDatabase(find_fields, repository)];
                     case 1:
-                        //Cria conexão com o database
                         _a.sent();
                         return [2 /*return*/];
                 }
             });
         });
     };
-    ConnectionUtil.getQueryRunner = function () {
+    ProductValidator.validateUpdateProduct = function (req, repository) {
         return __awaiter(this, void 0, void 0, function () {
-            var queryRunner;
+            var find_fields;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        queryRunner = ConnectionUtil.getPool().createQueryRunner();
-                        return [4 /*yield*/, queryRunner.connect()];
+                        if (!req.body.name) return [3 /*break*/, 2];
+                        find_fields = {
+                            name: req.body.name
+                        };
+                        return [4 /*yield*/, Validator_1.Validator.validateIfNotExistsInDatabase(find_fields, repository)];
                     case 1:
                         _a.sent();
-                        return [2 /*return*/, queryRunner];
+                        return [2 /*return*/];
+                    case 2:
+                        if (req.body.price) {
+                            return [2 /*return*/];
+                        }
+                        if (req.body.quantity) {
+                            return [2 /*return*/];
+                        }
+                        throw new CustomError_1.CustomError(400, Messages_1.Messages.ERROR_NO_FIELD);
                 }
             });
         });
     };
-    ConnectionUtil.getPool = function () {
-        return typeorm_1.getConnection("mysql-connection");
-    };
-    return ConnectionUtil;
+    return ProductValidator;
 }());
-exports.ConnectionUtil = ConnectionUtil;
-//# sourceMappingURL=ConnectionUtil.js.map
+exports.ProductValidator = ProductValidator;
+//# sourceMappingURL=ProductValidator.js.map

@@ -10,41 +10,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var typeorm_1 = require("typeorm");
-var User = /** @class */ (function () {
-    function User() {
+var Movimentation = /** @class */ (function () {
+    function Movimentation() {
     }
     __decorate([
         typeorm_1.PrimaryGeneratedColumn({ type: "int" }),
         __metadata("design:type", Number)
-    ], User.prototype, "id", void 0);
+    ], Movimentation.prototype, "id", void 0);
     __decorate([
-        typeorm_1.Column({ type: "varchar", length: 200 }),
-        __metadata("design:type", String)
-    ], User.prototype, "login", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "varchar", length: 500 }),
-        __metadata("design:type", String)
-    ], User.prototype, "password", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "varchar", length: 100 }),
-        __metadata("design:type", String)
-    ], User.prototype, "name", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "int", default: null }),
+        typeorm_1.Column({ type: "int" }),
         __metadata("design:type", Number)
-    ], User.prototype, "age", void 0);
+    ], Movimentation.prototype, "idProduct", void 0);
     __decorate([
-        typeorm_1.Column({ type: "tinyint", default: false }),
-        __metadata("design:type", Boolean)
-    ], User.prototype, "isHuman", void 0);
-    __decorate([
-        typeorm_1.Column({ type: "float", default: 0 }),
+        typeorm_1.Column({ type: "int" }),
         __metadata("design:type", Number)
-    ], User.prototype, "balance", void 0);
-    User = __decorate([
+    ], Movimentation.prototype, "idUser", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "date" }),
+        __metadata("design:type", Date)
+    ], Movimentation.prototype, "date", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "float" }),
+        __metadata("design:type", Number)
+    ], Movimentation.prototype, "price", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "int", default: 1 }),
+        __metadata("design:type", Number)
+    ], Movimentation.prototype, "quantity", void 0);
+    __decorate([
+        typeorm_1.Column({ type: "varchar", length: 50 }),
+        __metadata("design:type", String)
+    ], Movimentation.prototype, "type", void 0);
+    Movimentation = __decorate([
         typeorm_1.Entity()
-    ], User);
-    return User;
+    ], Movimentation);
+    return Movimentation;
 }());
-exports.User = User;
-//# sourceMappingURL=User.js.map
+exports.Movimentation = Movimentation;
+//# sourceMappingURL=Movimentation.js.map

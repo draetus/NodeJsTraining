@@ -6,50 +6,60 @@ var UserRouter = /** @class */ (function () {
     }
     UserRouter.init = function (express) {
         // Body {
-        // 	name: string
-        // 	age: number
-        // 	phone: number
-        // 	sex: string
-        // 	isHuman: boolean }
-        express.post("/api/user", function (req, res, next) {
+        // 	login: string
+        // 	password: string 
+        // 	name: string 
+        // 	age: number - Opcional
+        // 	isHuman: boolean  - Opcional
+        // 	balance: float - Opcional
+        // }
+        express.post("/api/users", function (req, res, next) {
             UserController_1.UserController.saveUser(req, res);
         });
-        // Opcionais (?exemplo="Nome") {
-        // 	id: number
-        // 	name: string
-        // 	age: number
-        // 	phone: number
-        // 	sex: string
-        // 	isHuman: boolean }
-        // 
         // Body {
-        // 	name: string
-        // 	age: number
-        // 	phone: number
-        // 	sex: string
-        // 	isHuman: boolean }
-        express.put("/api/user", function (req, res, next) {
+        // 	login: string
+        // 	password: string 
+        // 	name: string 
+        // 	age: number - Opcional 
+        // 	isHuman: boolean - Opcional 
+        // 	balance: float - Opcional 
+        // }
+        // Params {
+        // 	id: number 
+        // }
+        express.put("/api/users/:id", function (req, res, next) {
             UserController_1.UserController.updateUser(req, res);
         });
-        // Opcionais (?exemplo="Nome") {
-        // 	id: number
-        // 	name: string
-        // 	age: number
-        // 	phone: number
-        // 	sex: string
-        // 	isHuman: boolean }
-        express.get("/api/user", function (req, res, next) {
+        // Opcionais {
+        // id: number
+        // 	login: string 
+        // 	password: string 
+        // 	name: string 
+        // 	age: number 
+        // 	isHuman: boolean 
+        // 	balance: float 
+        // }
+        express.get("/api/users", function (req, res, next) {
             UserController_1.UserController.getUser(req, res);
         });
-        // Opcionais (?exemplo="Nome") {
+        // Params {
+        // 	id: number 
+        // }
+        express.get("/api/users/:id", function (req, res, next) {
+            UserController_1.UserController.getOneUser(req, res);
+        });
+        // Params {
         // 	id: number
-        // 	name: string
-        // 	age: number
-        // 	phone: number
-        // 	sex: string
-        // 	isHuman: boolean }
-        express.delete("/api/user", function (req, res, next) {
+        // }
+        express.delete("/api/users/:id", function (req, res, next) {
             UserController_1.UserController.deleteUser(req, res);
+        });
+        // Body {
+        // 	login: string 
+        // 	password: string
+        // }
+        express.post("/api/users/login", function (req, res, next) {
+            UserController_1.UserController.login(req, res);
         });
     };
     return UserRouter;

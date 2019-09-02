@@ -51,7 +51,6 @@ var Config = /** @class */ (function () {
             "day": 500
         }
     };
-    Config.ENCRYPT_SECRET = "dha%j24sdj$k53*3h2#dsj$jsdf";
     return Config;
 }());
 exports.Config = Config;

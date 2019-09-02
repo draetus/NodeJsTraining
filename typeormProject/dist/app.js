@@ -19,6 +19,7 @@ var compression_1 = __importDefault(require("compression"));
 var RouterInit_1 = require("./route/core/RouterInit");
 var Config_1 = require("./Config");
 require("reflect-metadata");
+var ConnectionUtil_1 = require("./util/ConnectionUtil");
 var App = /** @class */ (function () {
     function App() {
         this.express = null;
@@ -27,6 +28,7 @@ var App = /** @class */ (function () {
         this.express = express_1.default(); //Express é usado para rodar o servidor
         this.middleware(); // Executa funções relacionados a compressão e permissões
         RouterInit_1.RouterInit.init(this.express); // Inicializa as rotas
+        ConnectionUtil_1.ConnectionUtil.setup();
         console.log("Servidor pronto");
     }
     App.prototype.start = function () {

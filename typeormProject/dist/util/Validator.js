@@ -35,63 +35,40 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = require("../Config");
-var typeorm_1 = require("typeorm");
-var ConnectionUtil = /** @class */ (function () {
-    function ConnectionUtil() {
+var Messages_1 = require("../Messages");
+var CustomError_1 = require("../system/CustomError");
+var Validator = /** @class */ (function () {
+    function Validator() {
     }
-    ConnectionUtil.setup = function () {
+    Validator.validateIfExistsInDatabase = function (find_fields, repository) {
         return __awaiter(this, void 0, void 0, function () {
-            var database, database;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        database = Config_1.Config.DATABASES.main;
-                        if (Config_1.Config.TESTING && Config_1.Config.DATABASES.test) {
-                            database = Config_1.Config.DATABASES.test;
-                        }
-                        //Cria conexão com o database
-                        return [4 /*yield*/, typeorm_1.createConnection({
-                                name: "mysql-connection",
-                                type: "mysql",
-                                host: database.host,
-                                port: database.port,
-                                username: database.user,
-                                password: database.password,
-                                database: database.database,
-                                entities: [
-                                    __dirname.slice(0, __dirname.length - 5) + "/entity/*.js" // Entidades devem seguir o padrão do banco
-                                ],
-                                synchronize: true,
-                                logging: false
-                            })];
+                    case 0: return [4 /*yield*/, repository.count(find_fields)];
                     case 1:
-                        //Cria conexão com o database
-                        _a.sent();
+                        if ((_a.sent()) < 1) {
+                            throw new CustomError_1.CustomError(404, Messages_1.Messages.ERROR_NOT_FOUND, new Error());
+                        }
                         return [2 /*return*/];
                 }
             });
         });
     };
-    ConnectionUtil.getQueryRunner = function () {
+    Validator.validateIfNotExistsInDatabase = function (find_fields, repository) {
         return __awaiter(this, void 0, void 0, function () {
-            var queryRunner;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        queryRunner = ConnectionUtil.getPool().createQueryRunner();
-                        return [4 /*yield*/, queryRunner.connect()];
+                    case 0: return [4 /*yield*/, repository.count(find_fields)];
                     case 1:
-                        _a.sent();
-                        return [2 /*return*/, queryRunner];
+                        if ((_a.sent()) > 0) {
+                            throw new CustomError_1.CustomError(400, Messages_1.Messages.ERROR_ALREADY_EXISTS, new Error());
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    ConnectionUtil.getPool = function () {
-        return typeorm_1.getConnection("mysql-connection");
-    };
-    return ConnectionUtil;
+    return Validator;
 }());
-exports.ConnectionUtil = ConnectionUtil;
-//# sourceMappingURL=ConnectionUtil.js.map
+exports.Validator = Validator;
+//# sourceMappingURL=Validator.js.map
